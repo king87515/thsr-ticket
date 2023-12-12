@@ -146,7 +146,7 @@ def _input_security_code(img_resp: bytes) -> str:
     # 將 img_resp 轉換為圖像對象
     image = Image.open(io.BytesIO(img_resp))
     # 顯示圖像
-    image.show()
+    # image.show()
     # 將圖像數據傳遞給分類器
     res = ocr.classification(image)
     print(res)

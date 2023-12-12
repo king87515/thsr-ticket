@@ -11,3 +11,6 @@ dist/
 *.png
 test.py
 *.code-workspace
+
+# others
+run.sh

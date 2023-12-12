@@ -23,17 +23,21 @@ num=1
 id=$ID # export from env
 phone=$PHONE # export from env
 
-echo "skip: $skip"
-echo "station_from: $station_from"
-echo "station_to: $station_to"
-echo "date: $date"
-echo "go_time: $go_time"
-echo "num: $num"
-echo "id: $id"
-echo "phone: $phone"
+{
+  echo "skip: $skip"
+  echo "station_from: $station_from"
+  echo "station_to: $station_to"
+  echo "date: $date"
+  echo "go_time: $go_time"
+  echo "num: $num"
+  echo "id: $id"
+  echo "phone: $phone"
+} | tee -a log.txt
 
-# 第一次執行(DB還沒有紀錄)的話不需要 $skip
-/usr/bin/python3 thsr_ticket/main.py << EOF
+# 第一次執行的話(DB還沒有紀錄)，不需要 $skip
+while true; do
+output=$(
+(cat <<EOF
 $skip
 $station_from
 $station_to
@@ -44,3 +48,15 @@ $num
 $id
 $phone
 EOF
+) | /usr/bin/python3 thsr_ticket/main.py
+)
+echo "$output"
+
+  if echo "$output" | grep -q "錯誤: 檢測碼輸入錯誤"; then
+    echo "驗證碼輸入錯誤，1秒重新執行..."
+    sleep 1
+  else
+    echo "命令執行成功或未發現錯誤訊息，退出迴圈"
+    break
+  fi
+done

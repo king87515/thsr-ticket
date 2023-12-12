@@ -17,6 +17,7 @@ from thsr_ticket.configs.common import (
     DAYS_BEFORE_BOOKING_AVAILABLE,
     MAX_TICKET_NUM,
 )
+import ddddocr
 
 
 class FirstPageFlow:
@@ -141,6 +142,12 @@ def _parse_search_by(page: BeautifulSoup) -> str:
 
 def _input_security_code(img_resp: bytes) -> str:
     print('輸入驗證碼：')
+    ocr = ddddocr.DdddOcr()
+    # 將 img_resp 轉換為圖像對象
     image = Image.open(io.BytesIO(img_resp))
+    # 顯示圖像
     image.show()
-    return input()
+    # 將圖像數據傳遞給分類器
+    res = ocr.classification(image)
+    print(res)
+    return res # return input()
